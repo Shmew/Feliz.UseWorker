@@ -1,0 +1,12 @@
+﻿type project
+licenseExpression https://github.com/Shmew/Feliz.UseWorker/blob/master/LICENSE
+authors Cody Johnson
+description
+    Fable bindings written in the Feliz-style for useWorker.js
+language
+    F#
+tags
+    fsharp, fable, react, web worker, workers
+files
+    *.fsproj ==> fable
+    *.fs ==> fable

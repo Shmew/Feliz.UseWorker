@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="UseWorker\Examples\FunctionalElmishComponent.fs" />
+    <Compile Include="UseWorker\Examples\Basic.fs" />
+    <Compile Include="UseWorker\Examples\Elmish.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Urls.fs" />
+    <Compile Include="App.fs" />
+    <Content Include="index.html" />
+    <None Include="paket.references" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\src\Feliz.UseWorker\Feliz.UseWorker.fsproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <NpmDependencies>
+      <NpmPackage Name="react-highlight" Version="&gt;= 0.11.1" />
+    </NpmDependencies>
+  </PropertyGroup>
+  <Import Project="..\.paket\Paket.Restore.targets" />
+</Project>
