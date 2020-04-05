@@ -250,8 +250,12 @@ module WebWorker =
     module internal Worker =
         let defaultOptions =
             { BasePath = 
-                sprintf "%s/Workers"
-                    document.location.origin
+                document.location.href.Split('#') 
+                |> Array.tryHead
+                |> function
+                | Some url -> url
+                | None -> document.location.origin
+                |> sprintf "%s/Workers"
               ScriptName = None
               Dependencies = []
               Timeout = Some 5000 }
