@@ -4,15 +4,17 @@
 [<RequireQualifiedAccess>]
 module Samples.Basic
 
+open Elmish
 open Feliz
+open Feliz.UseWorker
 open Zanaptak.TypedCssClasses
 
 type Bulma = CssClasses<"https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css", Naming.PascalCase>
 type FA = CssClasses<"https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css", Naming.PascalCase>
 
 let render = React.functionComponent(fun () ->
-    let divText, setDivText = React.useState ""
-    let f,status,kill = React.useWorker(fun () -> "howdy!")
+    let worker,workerStatus = React.useWorker<unit, int>("Sort.sortNumbers")
+    let count,setCount = React.useState 0
 
     Html.div [
         prop.className Bulma.Control
@@ -22,15 +24,56 @@ let render = React.functionComponent(fun () ->
         ]
         prop.children [
             Html.div [
-                prop.text divText
-            ]
-            Html.div [
-                prop.text (status.ToString())
+                prop.style [ style.maxWidth (length.em 15); style.paddingBottom (length.em 2) ]
+                prop.children [
+                    Html.div [
+                        prop.style [
+                            style.textAlign.center
+                            style.marginLeft length.auto
+                            style.marginRight length.auto
+                            style.marginTop 50
+                            style.paddingBottom (length.em 2)
+                        ]
+                        prop.children [
+                            Html.li [
+                                prop.className [
+                                    FA.Fa
+                                    FA.FaRefresh
+                                    FA.FaSpin
+                                    FA.Fa3X
+                                ]
+                            ]
+                        ]
+                    ]
+                    Html.div [
+                        prop.classes [ Bulma.Box ]
+                        prop.children [
+                            Html.div [
+                                prop.text (sprintf "Worker Status: %s" (workerStatus.ToString()))
+                            ]
+                            Html.div [
+                                prop.text (sprintf "Count: %i" count)
+                            ]
+                        ]
+                    ]
+                ]
             ]
             Html.button [
-                prop.classes [ Bulma.Button ]
-                prop.onClick <| fun _ -> f() |> Promise.map setDivText |> Promise.start
+                prop.classes [ Bulma.Button; Bulma.HasBackgroundPrimary; Bulma.HasTextWhite ]
+                prop.disabled (match workerStatus with | WorkerStatus.Running | WorkerStatus.Killed -> true | _ -> false)
+                prop.onClick <| fun _ -> worker.invoke((), setCount) 
                 prop.text "Execute function!"
+            ]
+            Html.button [
+                prop.classes [ Bulma.Button; Bulma.HasBackgroundPrimary; Bulma.HasTextWhite ]
+                prop.disabled (match workerStatus with | WorkerStatus.Killed -> true | _ -> false)
+                prop.onClick <| fun _ -> worker.kill()
+                prop.text "Kill"
+            ]
+            Html.button [
+                prop.classes [ Bulma.Button; Bulma.HasBackgroundPrimary; Bulma.HasTextWhite ]
+                prop.onClick <| fun _ -> worker.restart()
+                prop.text "Restart"
             ]
         ]
     ])

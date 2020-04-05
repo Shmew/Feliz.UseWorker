@@ -1,4 +1,5 @@
 ﻿group UseWorker
+    Elmish
     Fable.Core
     Fable.Promise
     Feliz

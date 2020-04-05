@@ -67,7 +67,7 @@ let centeredSpinner =
 
 let samples = 
     [ "useworker-basic", Samples.Basic.render()
-      "useworker-elmish", Samples.Elmish.elmishComp() ]        
+      "useworker-elmish", Samples.Elmish.render() ]        
 
 let githubPath (rawPath: string) =
     let parts = rawPath.Split('/')
@@ -295,7 +295,7 @@ let sidebar (state: State) dispatch =
         prop.style [
             style.width (length.perc 100)
         ]
-        prop.children [ menuLabel "Feliz.Plotly"; allItems ]
+        prop.children [ menuLabel "Feliz.UseWorker"; allItems ]
     ]
 
 let readme = sprintf "https://raw.githubusercontent.com/%s/%s/master/README.md"

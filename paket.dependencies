@@ -6,6 +6,7 @@ group UseWorker
 	source https://nuget.org/api/v2
 	source https://api.nuget.org/v3/index.json
 
+    nuget Elmish ~> 3.0
     nuget Fable.Core ~> 3.1
     nuget Fable.Promise ~> 2.0
     nuget Feliz ~> 0.70

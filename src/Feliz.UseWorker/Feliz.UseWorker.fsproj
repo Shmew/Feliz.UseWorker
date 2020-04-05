@@ -9,8 +9,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="Types.fs" />
-    <Compile Include="Bindings.fs" />
     <Compile Include="UseWorker.fs" />
     <None Include="paket.references" />
     <None Include="paket.template" />

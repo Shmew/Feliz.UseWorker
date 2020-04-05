@@ -19,7 +19,7 @@ var CONFIG = {
                 useBuiltIns: 'usage',
                 corejs: 3
             }]
-        ],
+        ]
     }
 }
 
@@ -38,8 +38,7 @@ module.exports = {
     entry: resolve(CONFIG.fsharpEntry),
     output: {
         path: resolve(CONFIG.outputDir),
-        filename: 'bundle.[hash].js',
-        globalObject: 'this'
+        filename: 'bundle.[hash].js'
     },
     mode: isProduction ? 'production' : 'development',
     devtool: isProduction ? 'source-map' : 'eval-source-map',
@@ -89,7 +88,7 @@ module.exports = {
             }
         ]
     }
-};
+}
 
 function resolve(filePath) {
     return path.join(__dirname, filePath);
