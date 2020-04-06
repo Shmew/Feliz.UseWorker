@@ -4,13 +4,12 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Workers\Sort.fs" />
     <Compile Include="UseWorker\FPSStats.fs" />
     <Compile Include="UseWorker\Examples\Basic.fs" />
     <Compile Include="UseWorker\Examples\Elmish.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Workers\Updater.fs" />
-    <Compile Include="Workers\Sort.fs" />
     <Compile Include="Urls.fs" />
     <Compile Include="App.fs" />
     <Content Include="index.html" />

@@ -67,7 +67,7 @@ let centeredSpinner =
 
 let samples = 
     [ "useworker-basic", Samples.Basic.render()
-      "useworker-elmish", Samples.Elmish.render() ]        
+      "useworker-elmish", Samples.Elmish.render() ]
 
 let githubPath (rawPath: string) =
     let parts = rawPath.Split('/')

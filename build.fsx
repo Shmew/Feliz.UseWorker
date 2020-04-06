@@ -64,6 +64,7 @@ let srcGlob    = __SOURCE_DIRECTORY__ @@ "src/**/*.??proj"
 let fsSrcGlob  = __SOURCE_DIRECTORY__ @@ "src/**/*.fs"
 let fsTestGlob = __SOURCE_DIRECTORY__ @@ "tests/**/*.fs"
 let bin        = __SOURCE_DIRECTORY__ @@ "bin"
+let dist       = __SOURCE_DIRECTORY__ @@ "dist"
 let temp       = __SOURCE_DIRECTORY__ @@ "temp"
 let objFolder  = __SOURCE_DIRECTORY__ @@ "obj"
 let pub        = __SOURCE_DIRECTORY__ @@ "public"
@@ -179,6 +180,7 @@ Target.create "Clean" <| fun _ ->
         ++ (__SOURCE_DIRECTORY__  @@ "tools/obj")
         ++ (__SOURCE_DIRECTORY__  @@ "src/**/bin")
         ++ (__SOURCE_DIRECTORY__  @@ "src/**/obj")
+        ++ dist
         |> Seq.toList
         |> List.append [bin; temp; objFolder]
         |> Shell.cleanDirs
@@ -191,6 +193,7 @@ Target.create "CleanDocs" <| fun _ ->
         ++ (pub @@ "**/README.md")
         ++ (pub @@ "**/RELEASE_NOTES.md")
         ++ (pub @@ "index.html")
+        ++ (pub @@ "Workers/*.*")
         |> List.ofSeq
         |> List.iter Shell.rm
 
@@ -420,6 +423,9 @@ Target.create "Start" <| fun _ ->
     |> Async.RunSynchronously
     |> ignore
 
+Target.create "BuildWorkers" <| fun _ ->
+    Yarn.exec "create-workers" id
+
 Target.create "DemoRaw" <| fun _ ->
     Yarn.exec "compile-demo-raw" id
 
@@ -518,6 +524,7 @@ Target.create "Publish" ignore
 "All" <== ["Lint"; "RunTests"; "CopyBinaries" ]
 
 "CleanDocs"
+  ==> "BuildWorkers"
   ==> "CopyDocFiles"
   ==> "PrepDocs"
 

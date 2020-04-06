@@ -253,7 +253,7 @@ module WebWorker =
                 document.location.href.Split('#') 
                 |> Array.tryHead
                 |> function
-                | Some url -> url
+                | Some url -> url.Remove(url.Length-1)
                 | None -> document.location.origin
                 |> sprintf "%s/Workers"
               ScriptName = None
@@ -330,13 +330,13 @@ open Feliz.UseWorker
 [<RequireQualifiedAccess>]
 module Cmd =
     type Worker =
-        static member create (umdPath: string) workerMsg workerStatusMsg : Cmd<_> =
+        static member create (umdPath: string) (workerMsg: Worker<_,_> -> 'Msg) (workerStatusMsg: WorkerStatus -> 'Msg) : Cmd<_> =
             [ fun dispatch -> 
-                Worker.create<unit,int>(umdPath, (workerStatusMsg >> dispatch))
+                Worker.create<'Arg,'Result>(umdPath, (workerStatusMsg >> dispatch))
                 |> workerMsg
                 |> dispatch ]
 
-        static member createWithOptions<'Arg,'Result> (umdPath: string) workerMsg workerStatusMsg (options: WorkerOptions -> WorkerOptions) : Cmd<_> =
+        static member createWithOptions (umdPath: string) (workerMsg: Worker<_,_> -> 'Msg) (workerStatusMsg: WorkerStatus -> 'Msg) (options: WorkerOptions -> WorkerOptions) : Cmd<_> =
             [ fun dispatch -> 
                 Worker.createWithOptions<'Arg,'Result>(umdPath, (workerStatusMsg >> dispatch), options)
                 |> workerMsg
@@ -346,6 +346,11 @@ module Cmd =
             match worker with
             | Some worker -> Cmd.OfAsyncImmediate.perform worker.Invoke arg msg
             | None -> Cmd.none
+
+        static member execAll (workers: Worker<'Arg,'Result> list) (arg: 'Arg) (msg: 'Result -> 'Msg) =
+            workers
+            |> List.map (fun worker -> Cmd.OfAsyncImmediate.perform worker.Invoke arg msg)
+            |> Cmd.batch
 
         static member kill (worker: Worker<'Arg,'Result> option) : Cmd<_> =
             match worker with
