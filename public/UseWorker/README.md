@@ -23,8 +23,8 @@ type Msg =
 let init : State * Cmd<Msg> = 
     { Count = 0
       Worker = None
-      WorkerState = WorkerStatus.Pending }
-    , Cmd.Worker.create "Sort.sortNumbers" SetWorker ChangeWorkerState
+      WorkerState = WorkerStatus.Pending }, 
+    Cmd.Worker.create "Sort.sortNumbers" SetWorker ChangeWorkerState
 
 let update (msg: Msg) (state: State) : State * Cmd<Msg> =
     match msg with

@@ -5,7 +5,6 @@
 module Samples.Elmish
 
 open Elmish
-open Fable.Core
 open Feliz
 open Feliz.UseWorker
 open Feliz.ElmishComponents
@@ -24,14 +23,15 @@ type Msg =
     | ExecuteWorker
     | KillWorker
     | RestartWorker
+    | SetCount of int
     | SetWorker of Worker<unit,int>
     | WorkerResult of int
 
 let init : State * Cmd<Msg> = 
     { Count = 0
       Worker = None
-      WorkerState = WorkerStatus.Pending }
-    , Cmd.Worker.create "Sort.sortNumbers" SetWorker ChangeWorkerState
+      WorkerState = WorkerStatus.Pending }, 
+    Cmd.Worker.create "Sort.sortNumbers" SetWorker ChangeWorkerState
 
 let update (msg: Msg) (state: State) : State * Cmd<Msg> =
     match msg with
@@ -43,6 +43,8 @@ let update (msg: Msg) (state: State) : State * Cmd<Msg> =
         state, Cmd.Worker.kill state.Worker
     | RestartWorker ->
         state, Cmd.Worker.restart state.Worker
+    | SetCount i ->
+        { state with Count = i }, Cmd.none
     | SetWorker worker ->
         { state with Worker = Some worker }, Cmd.none
     | WorkerResult i ->
@@ -67,16 +69,7 @@ let render' state dispatch =
                             style.marginTop 50
                             style.paddingBottom (length.em 2)
                         ]
-                        prop.children [
-                            Html.li [
-                                prop.className [
-                                    FA.Fa
-                                    FA.FaRefresh
-                                    FA.FaSpin
-                                    FA.Fa3X
-                                ]
-                            ]
-                        ]
+                        prop.children [ FPSStats.render() ]
                     ]
                     Html.div [
                         prop.classes [ Bulma.Box ]
@@ -95,7 +88,7 @@ let render' state dispatch =
                 prop.classes [ Bulma.Button; Bulma.HasBackgroundPrimary; Bulma.HasTextWhite ]
                 prop.disabled (match state.WorkerState with | WorkerStatus.Running | WorkerStatus.Killed -> true | _ -> false)
                 prop.onClick <| fun _ -> dispatch ExecuteWorker
-                prop.text "Execute function!"
+                prop.text "Execute"
             ]
             Html.button [
                 prop.classes [ Bulma.Button; Bulma.HasBackgroundPrimary; Bulma.HasTextWhite ]
@@ -107,6 +100,11 @@ let render' state dispatch =
                 prop.classes [ Bulma.Button; Bulma.HasBackgroundPrimary; Bulma.HasTextWhite ]
                 prop.onClick <| fun _ -> dispatch RestartWorker
                 prop.text "Restart"
+            ]
+            Html.button [
+                prop.classes [ Bulma.Button; Bulma.HasBackgroundPrimary; Bulma.HasTextWhite ]
+                prop.onClick <| fun _ -> (Workers.Sort.sortNumbers() |> SetCount |> dispatch)
+                prop.text "Execute - Non worker"
             ]
         ]
     ]

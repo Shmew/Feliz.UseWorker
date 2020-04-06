@@ -29,6 +29,7 @@ module internal Internals =
     [<Emit("importScripts($0)")>]
     let importScripts s = jsNative
 
+    /// Creates the worker blob url via stringifying the parameters.
     let inline createWorkerBlobUrl umdPath depArr jobRunner =
         let onMessage = 
             sprintf "onmessage=(%s)(%s)" 
@@ -97,7 +98,7 @@ module WebWorker =
         | Status of WorkerStatus
         | Kill
 
-    type WorkerSubscriberMailbox (dispatch: WorkerStatus -> unit) =
+    type internal WorkerSubscriberMailbox (dispatch: WorkerStatus -> unit) =
         let mailbox =
             MailboxProcessor.Start <| fun inbox ->
                 let rec loop () =
@@ -121,7 +122,7 @@ module WebWorker =
         member _.PostStatus (status: WorkerStatus) =
             mailbox.Post(WorkerSubscriberState.Status status)
 
-    type WorkerSubscriber =
+    type internal WorkerSubscriber =
         | Elmish of WorkerSubscriberMailbox
         | Hook of (WorkerStatus -> unit)
 
@@ -241,10 +242,30 @@ module WebWorker =
 
             mailbox.Post(Restart worker)
 
+    /// Options for worker creation.
     type WorkerOptions =
-        { BasePath: string
-          ScriptName: string option
+        { /// The base path of where to load the worker script.
+          ///
+          /// Default: Tries to find the root via `document.
+          /// location.href by splitting on `#` and taking the head, 
+          /// if that fails it takes the `document.location.origin`. 
+          /// `/Workers` is then appended to the result.
+          BasePath: string
+          /// A list of external dependencies such as an unpkg script.
+          /// 
+          /// This shouldn't be necessary, simply open the namespace/modules
+          /// required and they will be included in the worker script.
+          ///
+          /// Default: []
           Dependencies: string list
+          /// Sets the function name of the loaded umd module.
+          ///
+          /// Default: `None` - splits on `BasePath` by `.` and takes 
+          /// the head.
+          FunctionName: string option
+          /// Timeout of worker function in ms.
+          ///
+          /// Default: `Some 5000`
           Timeout: int option }
 
     module internal Worker =
@@ -256,14 +277,15 @@ module WebWorker =
                 | Some url -> url.Remove(url.Length-1)
                 | None -> document.location.origin
                 |> sprintf "%s/Workers"
-              ScriptName = None
+              FunctionName = None
               Dependencies = []
               Timeout = Some 5000 }
 
+        /// Converts the umdPath and options into a list of dependencies for usage in the worker via importScripts
         let createDeps (umdPath: string) (options: WorkerOptions -> WorkerOptions) =
             let userOptions = options defaultOptions
 
-            userOptions.ScriptName
+            userOptions.FunctionName
             |> Option.defaultValue (umdPath.Split('.') |> Array.head)
             |> fun scriptName ->
                 sprintf "%s/%s.js"
@@ -273,11 +295,13 @@ module WebWorker =
                 workerPath::userOptions.Dependencies
                 |> Array.ofList
 
+        /// Creates the mailbox processer with subscriber for elmish usage.
         let create<'Args,'Result> (umdPath: string, dispatch: WorkerStatus -> unit) =
             let workerSub = WorkerSubscriber.Elmish(new WorkerSubscriberMailbox(dispatch))
 
             new Worker<'Args, 'Result>(umdPath, createDeps umdPath id, workerSub, ?timeout = defaultOptions.Timeout)
         
+        /// Creates the mailbox processer with subscriber and options for elmish usage.
         let createWithOptions<'Args, 'Result> (umdPath: string, dispatch: WorkerStatus -> unit, options: WorkerOptions -> WorkerOptions) =
             let workerSub = WorkerSubscriber.Elmish(new WorkerSubscriberMailbox(dispatch))
             let userOptions = options defaultOptions
@@ -286,6 +310,7 @@ module WebWorker =
             |> fun deps ->
                 new Worker<'Args, 'Result>(umdPath, deps, workerSub, ?timeout = userOptions.Timeout)
 
+        /// Creates the mailbox processer and subscriber (callback) for the react hook.
         let createHookWorker<'Args, 'Result> (umdPath: string, dispatch: WorkerStatus -> unit, options: WorkerOptions -> WorkerOptions) =
             let workerSub = WorkerSubscriber.Hook(dispatch)
             let userOptions = options defaultOptions
@@ -294,11 +319,20 @@ module WebWorker =
             |> fun deps ->
                 new Worker<'Args, 'Result>(umdPath, deps, workerSub, ?timeout = userOptions.Timeout)
 
+open Feliz
+
 [<AutoOpen>]
 module Feliz =
-    open Feliz
+    type WorkerCommands<'Arg,'Result> =
+        { /// Executes the worker function.
+          exec: ('Arg * ('Result -> unit)) -> unit
+          /// Terminates the worker instance.
+          kill: unit -> unit
+          /// Terminates the worker instance (if alive), then generates a new worker.
+          restart: unit -> unit }
 
     type React with
+        /// Creates the worker process.
         static member useWorker<'Arg, 'Result> (umdPath: string, options: WorkerOptions -> WorkerOptions) =
             let worker : Fable.React.IRefValue<Worker<'Arg, 'Result> option> = React.useRef(None)
             let workerStatus, setWorkerStatus = React.useState(WorkerStatus.Pending)
@@ -311,15 +345,16 @@ module Feliz =
                 React.createDisposable(fun () -> worker.current.Value.Kill())
             )
             
-            {| kill = fun () -> (worker.current.Value.Kill())
-               invoke = fun (args, callback) -> 
-                   async {
-                       let! res = worker.current.Value.Invoke(args)
-                       do callback res
-                   }
-                   |> Async.StartImmediate
-               restart = fun () -> (worker.current.Value.Restart()) |}
+            { exec = fun (args, callback) -> 
+                  async {
+                      let! res = worker.current.Value.Invoke(args)
+                      do callback res
+                  }
+                  |> Async.StartImmediate
+              kill = fun () -> (worker.current.Value.Kill())
+              restart = fun () -> (worker.current.Value.Restart()) }
             , workerStatus
+        /// Creates the worker process.
         static member inline useWorker<'Arg, 'Result> (umdPath: string) =
             React.useWorker<'Arg, 'Result>(umdPath, id)
             
@@ -330,33 +365,33 @@ open Feliz.UseWorker
 [<RequireQualifiedAccess>]
 module Cmd =
     type Worker =
+        /// Creates the worker process.
         static member create (umdPath: string) (workerMsg: Worker<_,_> -> 'Msg) (workerStatusMsg: WorkerStatus -> 'Msg) : Cmd<_> =
             [ fun dispatch -> 
                 Worker.create<'Arg,'Result>(umdPath, (workerStatusMsg >> dispatch))
                 |> workerMsg
                 |> dispatch ]
 
+        /// Creates the worker process with additional options.
         static member createWithOptions (umdPath: string) (workerMsg: Worker<_,_> -> 'Msg) (workerStatusMsg: WorkerStatus -> 'Msg) (options: WorkerOptions -> WorkerOptions) : Cmd<_> =
             [ fun dispatch -> 
                 Worker.createWithOptions<'Arg,'Result>(umdPath, (workerStatusMsg >> dispatch), options)
                 |> workerMsg
                 |> dispatch ]
 
-        static member exec (worker: Worker<'Arg,'Result> option) (arg: 'Arg) (msg: 'Result -> 'Msg) =
+        /// Executes the worker function.
+        static member exec (worker: Worker<'Arg,'Result> option) (arg: 'Arg) (msg: 'Result -> 'Msg) : Cmd<_> =
             match worker with
             | Some worker -> Cmd.OfAsyncImmediate.perform worker.Invoke arg msg
             | None -> Cmd.none
 
-        static member execAll (workers: Worker<'Arg,'Result> list) (arg: 'Arg) (msg: 'Result -> 'Msg) =
-            workers
-            |> List.map (fun worker -> Cmd.OfAsyncImmediate.perform worker.Invoke arg msg)
-            |> Cmd.batch
-
+        /// Terminates the worker instance.
         static member kill (worker: Worker<'Arg,'Result> option) : Cmd<_> =
             match worker with
             | Some worker -> [ fun _ -> worker.Kill() ]
             | None -> Cmd.none
 
+        /// Terminates the worker instance (if alive), then generates a new worker.
         static member restart (worker: Worker<'Arg,'Result> option) : Cmd<_> =
             match worker with
             | Some worker -> [ fun _ -> worker.Restart() ]

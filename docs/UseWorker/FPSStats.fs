@@ -12,7 +12,7 @@ type State =
       PrevTime: DateTime
       Fps: int }
 
-let render = React.functionComponent(fun () ->
+let render = React.memo(fun () ->
     let afRequest = React.useRef 0.
     let state,setState = React.useState { Frames = 0.; StartTime = DateTime.Now; PrevTime = DateTime.Now; Fps = 0 }
     let calcFPS () =
@@ -39,6 +39,6 @@ let render = React.functionComponent(fun () ->
     )
     
     Html.div [
-        prop.text (sprintf "%A" state.Fps)
+        prop.text (sprintf "FPS: %A" state.Fps)
     ])
 

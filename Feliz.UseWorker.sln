@@ -50,8 +50,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "public", "public", "{CABBED
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UseWorker", "UseWorker", "{C3F9583A-523B-4835-B6BC-CD8FFD2178E3}"
 	ProjectSection(SolutionItems) = preProject
-		public\UseWorker\Examples\Basic.md = public\UseWorker\Examples\Basic.md
+		public\UseWorker\API.md = public\UseWorker\API.md
+		public\UseWorker\Architecture.md = public\UseWorker\Architecture.md
+		public\UseWorker\Configuration.md = public\UseWorker\Configuration.md
 		public\UseWorker\Examples\Elmish.md = public\UseWorker\Examples\Elmish.md
+		public\UseWorker\Examples\Hooks.md = public\UseWorker\Examples\Hooks.md
 		public\UseWorker\Installation.md = public\UseWorker\Installation.md
 	EndProjectSection
 EndProject

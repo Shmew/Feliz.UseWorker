@@ -5,20 +5,15 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Remove="Props\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Include="UseWorker.fs" />
     <None Include="paket.references" />
     <None Include="paket.template" />
   </ItemGroup>
   <PropertyGroup>
     <NpmDependencies>
-      <NpmPackage Name="plotly.js" Version="gte 1.51 lt 2" ResolutionStrategy="max" />
-      <NpmPackage Name="react-plotly.js" Version="gte 2.4 lt 3" ResolutionStrategy="max" />
+      <NpmPackage Name="rollup" Version="gte 2 lt 3" ResolutionStrategy="max" DevDependency="true" />
+      <NpmPackage Name="fast-glob" Version="gte 3 lt 4" ResolutionStrategy="max" DevDependency="true" />
     </NpmDependencies>
   </PropertyGroup>
-
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

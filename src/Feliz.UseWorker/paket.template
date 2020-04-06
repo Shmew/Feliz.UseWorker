@@ -2,11 +2,11 @@
 licenseExpression https://github.com/Shmew/Feliz.UseWorker/blob/master/LICENSE
 authors Cody Johnson
 description
-    Fable bindings written in the Feliz-style for useWorker.js
+    Web workers in Fable made easy, exposed as React hooks and Elmish commands.
 language
     F#
 tags
-    fsharp, fable, react, web worker, workers
+    fsharp, fable, react, web worker, workers, feliz
 files
     *.fsproj ==> fable
     *.fs ==> fable

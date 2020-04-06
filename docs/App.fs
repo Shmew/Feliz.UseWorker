@@ -66,7 +66,7 @@ let centeredSpinner =
     ]
 
 let samples = 
-    [ "useworker-basic", Samples.Basic.render()
+    [ "useworker-hooks", Samples.Hooks.render()
       "useworker-elmish", Samples.Elmish.render() ]
 
 let githubPath (rawPath: string) =
@@ -280,10 +280,13 @@ let sidebar (state: State) dispatch =
                 menuList [
                     menuItem "Overview" [ ]
                     menuItem "Installation" [ Urls.UseWorker; Urls.Installation ]
+                    menuItem "Architecture" [ Urls.UseWorker; Urls.Architecture ]
+                    menuItem "Configuration" [ Urls.UseWorker; Urls.Configuration ]
+                    menuItem "API Reference" [ Urls.UseWorker; Urls.API ]
                     menuItem "Release Notes" [ Urls.UseWorker; Urls.ReleaseNotes ]
                     menuItem "Contributing" [ Urls.UseWorker; Urls.Contributing ]
                     menuLabel "Examples"
-                    menuItem "Basic" [ Urls.UseWorker; Urls.Examples; Urls.Basic ]
+                    menuItem "Hooks" [ Urls.UseWorker; Urls.Examples; Urls.Hooks ]
                     menuItem "Elmish" [ Urls.UseWorker; Urls.Examples; Urls.Elmish ]
                 ]
             ]
@@ -313,7 +316,10 @@ let content state dispatch =
     | [ Urls.UseWorker; Urls.Installation ] -> lazyView loadMarkdown [ "UseWorker"; "Installation.md" ]
     | [ Urls.UseWorker; Urls.ReleaseNotes ] -> lazyView loadMarkdown [ "UseWorker"; "RELEASE_NOTES.md" ]
     | [ Urls.UseWorker; Urls.Contributing ] -> lazyView loadMarkdown [ contributing ]
-    | [ Urls.UseWorker; Urls.Examples; Urls.Basic ] -> lazyView loadMarkdown [ "UseWorker"; "Examples"; "Basic.md" ]
+    | [ Urls.UseWorker; Urls.Architecture ] -> lazyView loadMarkdown [ "UseWorker"; "Architecture.md" ]
+    | [ Urls.UseWorker; Urls.Configuration ] -> lazyView loadMarkdown [ "UseWorker"; "Configuration.md" ]
+    | [ Urls.UseWorker; Urls.API ] -> lazyView loadMarkdown [ "UseWorker"; "API.md" ]
+    | [ Urls.UseWorker; Urls.Examples; Urls.Hooks ] -> lazyView loadMarkdown [ "UseWorker"; "Examples"; "Hooks.md" ]
     | [ Urls.UseWorker; Urls.Examples; Urls.Elmish ] -> lazyView loadMarkdown [ "UseWorker"; "Examples"; "Elmish.md" ]
     | _ -> lazyView loadMarkdown [ "UseWorker"; "README.md" ]
 

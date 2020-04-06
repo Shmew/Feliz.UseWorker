@@ -47,14 +47,6 @@ let update (msg: Msg) (state: State) : State * Cmd<Msg> =
     | WorkerResult i ->
         { state with Count = i }, Cmd.none
 
-let rng = System.Random()
-
-let sortNumbers () =
-    Array.init 5000000 (fun _ -> rng.NextDouble() * 1000000.)
-    |> Array.sort
-    |> Array.sum
-    |> int
-
 let render' state dispatch =
     Html.div [
         prop.className Bulma.Control
@@ -93,7 +85,7 @@ let render' state dispatch =
                 prop.classes [ Bulma.Button; Bulma.HasBackgroundPrimary; Bulma.HasTextWhite ]
                 prop.disabled (match state.WorkerState with | WorkerStatus.Running | WorkerStatus.Killed -> true | _ -> false)
                 prop.onClick <| fun _ -> dispatch ExecuteWorker
-                prop.text "Execute function!"
+                prop.text "Execute"
             ]
             Html.button [
                 prop.classes [ Bulma.Button; Bulma.HasBackgroundPrimary; Bulma.HasTextWhite ]
@@ -108,7 +100,7 @@ let render' state dispatch =
             ]
             Html.button [
                 prop.classes [ Bulma.Button; Bulma.HasBackgroundPrimary; Bulma.HasTextWhite ]
-                prop.onClick <| fun _ -> (sortNumbers() |> SetCount |> dispatch)
+                prop.onClick <| fun _ -> (Workers.Sort.sortNumbers() |> SetCount |> dispatch)
                 prop.text "Execute - Non worker"
             ]
         ]

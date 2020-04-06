@@ -1,5 +1,5 @@
 ﻿[<RequireQualifiedAccess>]
-module Samples.Basic
+module Samples.Hooks
 
 open Elmish
 open Feliz
@@ -8,14 +8,6 @@ open Zanaptak.TypedCssClasses
 
 type Bulma = CssClasses<"https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css", Naming.PascalCase>
 type FA = CssClasses<"https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css", Naming.PascalCase>
-
-let rng = System.Random()
-
-let sortNumbers () =
-    Array.init 5000000 (fun _ -> rng.NextDouble() * 1000000.)
-    |> Array.sort
-    |> Array.sum
-    |> int
 
 let render = React.functionComponent(fun () ->
     let worker,workerStatus = React.useWorker<unit, int>("Sort.sortNumbers")
@@ -57,7 +49,7 @@ let render = React.functionComponent(fun () ->
             Html.button [
                 prop.classes [ Bulma.Button; Bulma.HasBackgroundPrimary; Bulma.HasTextWhite ]
                 prop.disabled (match workerStatus with | WorkerStatus.Running | WorkerStatus.Killed -> true | _ -> false)
-                prop.onClick <| fun _ -> worker.invoke((), setCount) 
+                prop.onClick <| fun _ -> worker.exec((), setCount) 
                 prop.text "Execute"
             ]
             Html.button [
@@ -73,7 +65,7 @@ let render = React.functionComponent(fun () ->
             ]
             Html.button [
                 prop.classes [ Bulma.Button; Bulma.HasBackgroundPrimary; Bulma.HasTextWhite ]
-                prop.onClick <| fun _ -> (sortNumbers() |> setCount)
+                prop.onClick <| fun _ -> (Workers.Sort.sortNumbers() |> setCount)
                 prop.text "Execute - Non worker"
             ]
         ]

@@ -1,12 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Workers\Sort.fs" />
     <Compile Include="UseWorker\FPSStats.fs" />
-    <Compile Include="UseWorker\Examples\Basic.fs" />
+    <Compile Include="UseWorker\Examples\Hooks.fs" />
     <Compile Include="UseWorker\Examples\Elmish.fs" />
   </ItemGroup>
   <ItemGroup>
