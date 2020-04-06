@@ -2967,7 +2967,7 @@
   function sortNumbers() {
     let value;
     let array$$1;
-    const array = initialize(5000000, function (_arg1) {
+    const array = initialize(3000000, function (_arg1) {
       return Math.random() * 1000000;
     }, Float64Array);
     array$$1 = sort(array, {

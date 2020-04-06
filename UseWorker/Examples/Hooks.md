@@ -1,8 +1,8 @@
-﻿# Feliz.UseWorker - Basic Example
+﻿# Feliz.UseWorker - React Hooks Example
 
-```fsharp:useworker-basic
+```fsharp:useworker-hooks
 [<RequireQualifiedAccess>]
-module Samples.Basic
+module Samples.Hooks
 
 open Elmish
 open Feliz
@@ -34,16 +34,7 @@ let render = React.functionComponent(fun () ->
                             style.marginTop 50
                             style.paddingBottom (length.em 2)
                         ]
-                        prop.children [
-                            Html.li [
-                                prop.className [
-                                    FA.Fa
-                                    FA.FaRefresh
-                                    FA.FaSpin
-                                    FA.Fa3X
-                                ]
-                            ]
-                        ]
+                        prop.children [ FPSStats.render() ]
                     ]
                     Html.div [
                         prop.classes [ Bulma.Box ]
@@ -61,8 +52,8 @@ let render = React.functionComponent(fun () ->
             Html.button [
                 prop.classes [ Bulma.Button; Bulma.HasBackgroundPrimary; Bulma.HasTextWhite ]
                 prop.disabled (match workerStatus with | WorkerStatus.Running | WorkerStatus.Killed -> true | _ -> false)
-                prop.onClick <| fun _ -> worker.invoke((), setCount) 
-                prop.text "Execute function!"
+                prop.onClick <| fun _ -> worker.exec((), setCount) 
+                prop.text "Execute"
             ]
             Html.button [
                 prop.classes [ Bulma.Button; Bulma.HasBackgroundPrimary; Bulma.HasTextWhite ]
@@ -74,6 +65,11 @@ let render = React.functionComponent(fun () ->
                 prop.classes [ Bulma.Button; Bulma.HasBackgroundPrimary; Bulma.HasTextWhite ]
                 prop.onClick <| fun _ -> worker.restart()
                 prop.text "Restart"
+            ]
+            Html.button [
+                prop.classes [ Bulma.Button; Bulma.HasBackgroundPrimary; Bulma.HasTextWhite ]
+                prop.onClick <| fun _ -> (Workers.Sort.sortNumbers() |> setCount)
+                prop.text "Execute - Non worker"
             ]
         ]
     ])
