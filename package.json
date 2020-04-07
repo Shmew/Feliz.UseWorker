@@ -1,6 +1,6 @@
 {
   "name": "feliz.-use-worker",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Fable bindings written in the Feliz-style for UseWorker.js",
   "homepage": "https://github.com/Shmew/Feliz.UseWorker",
   "bugs": {
@@ -15,7 +15,7 @@
   "scripts": {
     "build": "webpack -p",
     "compile-demo-raw": "fable-splitter -c docs/splitter.config.js",
-    "create-workers": "fable-splitter -c docs/splitter.config.js && rollup -c docs/rollup.config.js",
+    "create-workers": "webpack --config docs/webpack.config.js",
     "publish-docs": "yarn build && node publish.js",
     "start": "webpack-dev-server"
   },

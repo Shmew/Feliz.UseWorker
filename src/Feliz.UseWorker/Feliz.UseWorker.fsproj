@@ -11,8 +11,14 @@
   </ItemGroup>
   <PropertyGroup>
     <NpmDependencies>
-      <NpmPackage Name="rollup" Version="gte 2 lt 3" ResolutionStrategy="max" DevDependency="true" />
+      <NpmPackage Name="@babel/core" Version="gte 7" ResolutionStrategy="max" DevDependency="true" />
+      <NpmPackage Name="@babel/preset-env" Version="gte 7" ResolutionStrategy="max" DevDependency="true" />
+      <NpmPackage Name="babel-loader" Version="gte 8" ResolutionStrategy="max" DevDependency="true" />
+      <NpmPackage Name="core-js" Version="gte 3" ResolutionStrategy="max" DevDependency="true" />
+      <NpmPackage Name="fable-compiler" Version="gte 2" ResolutionStrategy="max" DevDependency="true" />
+      <NpmPackage Name="fable-loader" Version="gte 2" ResolutionStrategy="max" DevDependency="true" />
       <NpmPackage Name="fast-glob" Version="gte 3 lt 4" ResolutionStrategy="max" DevDependency="true" />
+      <NpmPackage Name="webpack" Version="gte 4" ResolutionStrategy="max" DevDependency="true" />
     </NpmDependencies>
   </PropertyGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

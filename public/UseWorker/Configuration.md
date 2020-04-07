@@ -6,8 +6,16 @@ To create the worker simply create a new file in
 your project. The module can be opened in your
 actual application if you want to be able to run the
 code without a worker context, it won't negatively
-impact anything. In addition, you can simply include
-any namespaces/modules that the worker needs to use.
+impact anything. 
+
+You can open namespaces and modules to use in the web
+worker, but you need to make sure the module *does not
+use any browser APIs or DOM related libraries (like React)!*
+
+If you have code that your worker needs to consume (like the 
+domain model for a specific React component) I recommend
+moving that code to a more isolated file. This will also help
+keep the bundle small.
 
 There are a couple caveats here:
  * Avoid using namespacing in the worker file
@@ -16,44 +24,19 @@ There are a couple caveats here:
 
 If you do either of the following above *the worker will fail!*
 
-## Packaging the worker
+## Packaging the worker with Webpack
 
-There are two main steps to get your worker created and 
-accessible by your application: `fable-splitter` and `rollup`.
-
-### fable-splitter
-
-You need to define a `splitter.config.js` (or use the cli, but
-I recommend using a configuration file). The configuration here
-is very simple:
-
-```js
-const path = require("path");
-
-module.exports = {
-    allFiles: true,
-    entry: path.join(__dirname, "App.fsproj"),
-    outDir: path.join(__dirname, "../dist"),
-};
-```
-
-This will compile every file (even unused ones like your worker) 
-in your project and place them into the folder of your choosing 
-(typically people use `dist` for this).
-
-### rollup
-
-A `rollup.config.js` will need to be created in your project with
+A `webpack.config.js` will need to be created in your project with
 the following configuration:
 
 ```js
 const glob = require('fast-glob');
 const path = require('path');
-import cleanup from 'rollup-plugin-cleanup';
 
-const distDir = path.join(__dirname, '../dist/Workers')
+// Where to place the worker files
 const outputDir = path.join(__dirname, '../public/Workers')
-const workerGlobs = ['*.js']
+// Path from the current directory to worker source code
+const workerGlobs = ['Workers/*.fs']
 
 const flatten = arr => {
     return arr.reduce(function (flat, toFlatten) {
@@ -61,46 +44,87 @@ const flatten = arr => {
     }, []);
 }
 
+const createExport = fileName => {
+    const options =
+        {
+            entry: fileName,
+            output: {
+                path: outputDir,
+                filename: path.basename(fileName).replace(/\.fs(x)?$/, '.js'),
+                library: path.basename(fileName, path.extname(fileName)),
+                libraryTarget: 'umd'
+            },
+            mode: 'production',
+            devtool: 'source-map',
+            resolve: {
+                // See https://github.com/fable-compiler/Fable/issues/1490
+                symlinks: false
+            },
+            module: {
+                rules: [
+                    {
+                        test: /\.fs(x|proj)?$/,
+                        use: {
+                            loader: 'fable-loader',
+                            options: {
+                                allFiles: true,
+                                define: []
+                            }
+                        }
+                    },
+                    {
+                        test: /\.js$/,
+                        exclude: /node_modules/,
+                        use: {
+                            loader: 'babel-loader',
+                            options: {
+                                presets: [
+                                    ['@babel/preset-env', {
+                                        modules: false,
+                                        // This adds polyfills when needed. Requires core-js dependency.
+                                        // See https://babeljs.io/docs/en/babel-preset-env#usebuiltins
+                                        // Note that you still need to add custom polyfills if necessary (e.g. whatwg-fetch)
+                                        useBuiltIns: 'usage',
+                                        corejs: 3
+                                    }]
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            target: 'webworker'
+        }
+    return options
+}
+
 module.exports = flatten(
     workerGlobs
-        .map(pattern => path.join(distDir, pattern).replace(/\\/g, '/'))
-        .map(workerGlob => {
-            return glob.sync(workerGlob).map(fileName => {
-                const options = {
-                    input: fileName,
-                    output: {
-                        dir: outputDir,
-                        format: 'umd',
-                        preferConst: true,
-                        name: path.basename(fileName, path.extname(fileName))
-                    },
-                    plugins: [
-                        cleanup(),
-                    ]
-                }
-
-                return options
-            })
-        }))
+        .map(pattern => path.join(__dirname, pattern).replace(/\\/g, '/'))
+        .map(workerGlob => glob.sync(workerGlob).map(createExport))
+)
 ```
 
 You should just copy and paste this into your newly created 
-`rollup.config.js`. The only items you need to worry about 
-once you've done that is the `distDir` and `outputDir`.
+`webpack.config.js`. The only items you need to worry about 
+once you've done that is the `outputDir` and `workerGlobs`.
+
+You can modify the `createExport` function to change how your worker
+is bundled.
 
 By default the library will look for the root of your application
 and then try to load the worker from the `/Workers` directory.
 
 ### package.json
 
-Setup here is pretty simple, just call the two configurations with
-their respective tool:
+Setup here is pretty simple, just call webpack with the configuration
+file you just made:
 
 ```json
 {
     ...
     "scripts": {
-        "create-workers": "fable-splitter -c docs/splitter.config.js && rollup -c docs/rollup.config.js"
+        "create-workers": "webpack --config docs/webpack.config.js"
     }
     ...
 }

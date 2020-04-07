@@ -15,8 +15,7 @@
     <Compile Include="App.fs" />
     <Content Include="index.html" />
     <None Include="paket.references" />
-    <None Include="rollup.config.js" />
-    <None Include="splitter.config.js" />
+    <None Include="webpack.config.js" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\Feliz.UseWorker\Feliz.UseWorker.fsproj" />

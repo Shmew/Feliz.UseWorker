@@ -12,17 +12,26 @@ paket add Feliz.UseWorker --project ./project/path
 ```
 Then you need to install the corresponding npm dependencies.
 ```bash
-npm install rollup --save-dev
-npm install fast-glob --save-dev
-
-npm install rollup-plugin-cleanup --save-dev // Recommended, but not necessary
+npm install --save-dev @babel/core
+npm install --save-dev @babel/preset-env
+npm install --save-dev babel-loader
+npm install --save-dev core-js
+npm install --save-dev fable-compiler
+npm install --save-dev fable-loader
+npm install --save-dev fast-glob
+npm install --save-dev webpack
 
 ___
 
-yarn add rollup --dev
+yarn add @babel/core --dev
+yarn add @babel/preset-env --dev
+yarn add babel-loader --dev
+yarn add core-js --dev
+yarn add fable-compiler --dev
+yarn add fable-loader --dev
 yarn add fast-glob --dev
+yarn add webpack --dev
 
-yarn add rollup-plugin-cleanup --dev // If you plan to use snapshot testing
 ```
 
 ### Use Femto
@@ -38,9 +47,5 @@ Here, the nuget package will be installed
 using the package manager that the project 
 is using (detected by Femto) and then the 
 required npm packages will be resolved
-
-Do note that this will *not* install the 
-optional dependencies listed above (the 
-rollup plugin).
 
 [Femto]: https://github.com/Zaid-Ajaj/Femto
