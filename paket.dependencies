@@ -9,6 +9,7 @@ group UseWorker
     nuget Elmish ~> 3.0
     nuget Fable.Core ~> 3.1
     nuget Fable.Promise ~> 2.0
+    nuget Fable.SimpleJson ~> 3.8
     nuget Feliz ~> 0.70
     nuget FSharp.Core ~> 4.7
 

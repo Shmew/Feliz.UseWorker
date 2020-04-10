@@ -18,7 +18,7 @@ moving that code to a more isolated file. This will also help
 keep the bundle small.
 
 There are a couple caveats here:
- * Avoid using namespacing in the worker file
+ * Avoid using namespacing in the worker file.
  * Do not open any namespaces or modules in the worker
    that require the DOM to function. (e.g. no react libs)
 
@@ -145,52 +145,68 @@ via Elmish or a React hook.
 Creating a worker via the hook is quite simple:
 
 ```fs
-React.useWorker<unit, int>("Sort.sortNumbers")
+// MyWorker.fs
+module MyWorker
+
+open Feliz.UseWorker
+
+// The function does not need to be inlined
+let myFunction = WorkerFunc("MyWorker","myFunction", fun () -> 1)
 ```
 
-The points to note here is that you define the input and output 
-types when calling `React.useWorker`. These are essentially the
-signature of the function you wish to call. In this case
-`sortNumbers` is a function that takes `()` and returns an `int`.
+```fs
+let worker,workerStatus = React.useWorker(MyWorker.myFunction)
+```
 
-The string you provide is the `umd` path to your function. The 
-`umd` module will be the *name of your worker.fs*. Then you 
-provide the actual function within your `worker.fs` as you defined
-it in the file.
+The two strings you provide is the `umd` path to your function. The first
+is the umd module, which will be the *name of your worker.fs* by default. 
+Then you provide name of the binding to your `WorkerFunc`, and then the 
+function you want to call.
 
-What we get back from this is a tuple of which the first value
+What we get back from the hook is a tuple of which the first value
 is the `worker` instance, and the second is the React `state` 
 representing the `WorkerStatus`. 
 
-The `worker` instance is an anonymous record exposing three functions:
+The `worker` instance is a `WorkerCommands<'Arg,'Result>` which exposes
+three functions:
 
 ```fs
-exec: unit -> int
+exec: 'Arg -> 'Result
 kill: unit -> unit
 restart: unit -> unit
 ```
 
-Do note that the `exec` function signature is based on the type 
-restrictions applied during creation above.
+Do note that the `exec` function signature is the same as your provided 
+function.
 
-From this point you can simply call these values like any other
+From this point, you can simply call these values like any other
 and the worker will handle the rest!
 
 ### Elmish
 
 Creating a worker using Elmish is a bit more involved, but still
-pretty straightforward. To create the worker you dispatch 
-`Cmd.Worker.create` (or `Cmd.Worker.createWithOptions` more on that
-below):
+pretty straightforward. To create the worker you dispatch use
+`Cmd.Worker.create` or `Cmd.Worker.createWithOptions` to modify 
+default behavior:
 
 ```fs
-Cmd.Worker.create "Sort.sortNumbers" SetWorker ChangeWorkerState
+// MyWorker.fs
+module MyWorker
+
+open Feliz.UseWorker
+
+// The function does not need to be inlined
+let myFunction = WorkerFunc("MyWorker","myFunction", fun () -> 1)
 ```
 
-The string you provide is the `umd` path to your function. The 
-`umd` module will be the *name of your worker.fs*. Then you 
-provide the actual function within your `worker.fs` as you defined
-it in the file.
+```fs
+Cmd.Worker.create MyWorker.myFunction SetWorker ChangeWorkerState
+```
+
+The two strings you provide is the `umd` path to your function. The first
+is the umd module, which will be the *name of your worker.fs* by default. 
+Then you provide name of the binding to your `WorkerFunc`, and then the 
+function you want to call.
 
 `SetWorker` and `ChangeWorkerState` are part of your `Msg` type, 
 with `SetWorker` being the msg to set your worker in your state 
@@ -214,9 +230,6 @@ type Msg =
     | SetWorker of Worker<unit,int>
     | WorkerResult of int
 ```
-
-Do note that the type restrictions on `SetWorker` is how you
-define the signature of the function you're calling. 
 
 Once you've done this and have a worker you can dispatch a
 `Cmd` to send a message to your worker. There are three 

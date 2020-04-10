@@ -2,5 +2,6 @@
     Elmish
     Fable.Core
     Fable.Promise
+    Fable.SimpleJson
     Feliz
     FSharp.Core

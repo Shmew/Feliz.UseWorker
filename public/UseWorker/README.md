@@ -2,6 +2,24 @@
 
 Web workers in Fable made easy, exposed as React hooks and Elmish commands.
 
+A worker file:
+
+```fs
+module Workers.Sort
+
+open Feliz.UseWorker
+
+let rng = System.Random()
+
+let sortNumbers' () =
+    Array.init 3000000 (fun _ -> rng.NextDouble() * 1000000.)
+    |> Array.sort
+    |> Array.sum
+    |> int
+
+let sortNumbers = WorkerFunc.Create("Sort", "sortNumbers", sortNumbers')
+```
+
 Elmish:
 
 ```fs
@@ -20,13 +38,13 @@ type Msg =
     | SetWorker of Worker<unit,int>
     | WorkerResult of int
 
-let init : State * Cmd<Msg> = 
+let init = 
     { Count = 0
       Worker = None
       WorkerState = WorkerStatus.Pending }, 
-    Cmd.Worker.create "Sort.sortNumbers" SetWorker ChangeWorkerState
+    Cmd.Worker.create Workers.Sort.sortNumbers SetWorker ChangeWorkerState
 
-let update (msg: Msg) (state: State) : State * Cmd<Msg> =
+let update (msg: Msg) (state: State) =
     match msg with
     | ChangeWorkerState workerState ->
         { state with WorkerState = workerState }, Cmd.none
@@ -48,7 +66,7 @@ Hooks:
 open Feliz.UseWorker
 
 let render = React.functionComponent(fun () ->
-    let worker,workerStatus = React.useWorker<unit, int>("Sort.sortNumbers")
+    let worker,workerStatus = React.useWorker(Workers.Sort.sortNumbers)
     let count,setCount = React.useState 0
 
     Html.div [
@@ -56,7 +74,7 @@ let render = React.functionComponent(fun () ->
             ...
             Html.button [
                 prop.onClick <| fun _ -> worker.invoke((), setCount) 
-                prop.text "Execute function!"
+                prop.text "Execute"
             ]
             Html.button [
                 prop.onClick <| fun _ -> worker.kill()

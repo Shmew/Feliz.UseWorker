@@ -10,7 +10,7 @@ type Bulma = CssClasses<"https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/
 type FA = CssClasses<"https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css", Naming.PascalCase>
 
 let render = React.functionComponent(fun () ->
-    let worker,workerStatus = React.useWorker<unit, int>("Sort.sortNumbers")
+    let worker,workerStatus = React.useWorker(Workers.Sort.sortNumbers)
     let count,setCount = React.useState 0
 
     Html.div [
@@ -65,7 +65,7 @@ let render = React.functionComponent(fun () ->
             ]
             Html.button [
                 prop.classes [ Bulma.Button; Bulma.HasBackgroundPrimary; Bulma.HasTextWhite ]
-                prop.onClick <| fun _ -> (Workers.Sort.sortNumbers() |> setCount)
+                prop.onClick <| fun _ -> (Workers.Sort.sortNumbers.InvokeSync() |> setCount)
                 prop.text "Execute - Non worker"
             ]
         ]

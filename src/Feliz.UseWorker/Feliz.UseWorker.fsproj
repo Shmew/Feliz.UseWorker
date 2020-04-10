@@ -5,7 +5,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="UseWorker.fs" />
+    <Compile Include="Worker.fs" />
+    <Compile Include="Elmish.fs" />
+    <Compile Include="Hook.fs" />
     <None Include="paket.references" />
     <None Include="paket.template" />
   </ItemGroup>

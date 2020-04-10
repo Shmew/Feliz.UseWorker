@@ -24,13 +24,13 @@ type Msg =
     | SetWorker of Worker<unit,int>
     | WorkerResult of int
 
-let init : State * Cmd<Msg> = 
+let init = 
     { Count = 0
       Worker = None
       WorkerState = WorkerStatus.Pending }, 
-    Cmd.Worker.create "Sort.sortNumbers" SetWorker ChangeWorkerState
+    Cmd.Worker.create Workers.Sort.sortNumbers SetWorker ChangeWorkerState
 
-let update (msg: Msg) (state: State) : State * Cmd<Msg> =
+let update (msg: Msg) (state: State) =
     match msg with
     | ChangeWorkerState workerState ->
         { state with WorkerState = workerState }, Cmd.none
@@ -100,11 +100,10 @@ let render' state dispatch =
             ]
             Html.button [
                 prop.classes [ Bulma.Button; Bulma.HasBackgroundPrimary; Bulma.HasTextWhite ]
-                prop.onClick <| fun _ -> (Workers.Sort.sortNumbers() |> SetCount |> dispatch)
+                prop.onClick <| fun _ -> (Workers.Sort.sortNumbers.InvokeSync() |> SetCount |> dispatch)
                 prop.text "Execute - Non worker"
             ]
         ]
     ]
-    
 
 let render () = React.elmishComponent("Counter", init, update, render')
