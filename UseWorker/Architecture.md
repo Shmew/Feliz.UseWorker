@@ -14,22 +14,21 @@ url from the actual body of the worker. In essence instead
 of a script tag that contains the worker code it is built
 at runtime and provided to the browser. 
 
-In order to support F# bcl functions, a script still needs 
+In order to support the F# BCL, a script still needs 
 to be provided to the worker for it to know how to properly 
 run the code given. This is accomplished by including the 
 worker in your application like you would any other file. 
-The combination of `fable-splitter` and `rollup` allows us 
-to compile the worker as a normal javascript file. Then, 
-when the worker in your application is created it gets 
-pointed to that file and provided the `umd` module name and 
-the function you want to run.
-
+Webpack allows us to compile the worker as a normal javascript 
+file. Then, when the worker in your application is created 
+it gets pointed to that file and via the provided `WorkerFunc`
+and set options.
 
 The library has some defaults where it will expect the file to 
 be, which can be modified when creating the worker. You don't 
 need to worry about trying to import or manage other dependencies
 that the worker needs, simply open the namespace in the worker
-file and use it. `fable-splitter` and `rollup` will do the rest!
+file and use it. Please note *any namespace opened that 
+uses/imports a library that needs DOM access will not work!*
 
 ### Worker Management
 
