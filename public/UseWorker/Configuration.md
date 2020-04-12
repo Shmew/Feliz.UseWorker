@@ -231,7 +231,31 @@ type Msg =
     | WorkerResult of int
 ```
 
-Once you've done this and have a worker you can dispatch a
+Keep in mind that when using the elmish versions this worker will *not
+automatically dispose of itself if it goes out of scope!* You will need
+to kill your worker manually.
+
+It is *strongly recommended* that you use [Feliz.ElmishComponents] when 
+your worker is not used globally or your state is not persistent.
+
+If you're using [Feliz.ElmishComponents] then you can interface `System.IDisposable` 
+in your state (aka model) and the `React.elmishComponent` will automatically dispose
+the state when the component is unmounted. 
+
+What this means is you can do this:
+
+```fs
+type State =
+    { Count: int 
+      Worker: Worker<unit,int> option
+      WorkerState: WorkerStatus }
+
+    interface System.IDisposable with
+        member this.Dispose () =
+            this.Worker |> Option.iter (fun w -> w.Dispose())
+```
+
+Once you've done this and have a worker, you can dispatch a
 `Cmd` to send a message to your worker. There are three 
 commands:
 
@@ -246,3 +270,5 @@ If the worker is `None` the command will be skipped.
 From this point on you can simply dispatch a msg from your 
 view and the update function will in turn create a `Cmd` to
 call the worker.
+
+[Feliz.ElmishComponents]: https://zaid-ajaj.github.io/Feliz/#/Ecosystem/ElmishComponents

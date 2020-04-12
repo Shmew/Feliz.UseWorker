@@ -1,3 +1,6 @@
+### 0.4.0 - Saturday, April 12th, 2020
+* Add api for properly disposing of elmish generated workers.
+
 ### 0.3.0 - Thursday, April 9th, 2020
 * Re-implement public API for more customization and type safety
 * Add auto-serialization for complex message passing

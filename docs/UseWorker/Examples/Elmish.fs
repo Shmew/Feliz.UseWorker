@@ -15,6 +15,10 @@ type State =
       Worker: Worker<unit,int> option
       WorkerState: WorkerStatus }
 
+    interface System.IDisposable with
+        member this.Dispose () =
+            this.Worker |> Option.iter (fun w -> w.Dispose())
+
 type Msg =
     | ChangeWorkerState of WorkerStatus
     | ExecuteWorker

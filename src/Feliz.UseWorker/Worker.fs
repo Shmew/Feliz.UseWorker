@@ -403,6 +403,9 @@ type Worker<'Arg,'Result> private (workerFun: WorkerFunc<'Arg,'Result>, subscrib
             token.Dispose()
             subscriber.Kill()
 
+    /// Disposes the worker and all resources related to it.
+    member this.Dispose() = (this :> System.IDisposable).Dispose()
+
     [<EditorBrowsable(EditorBrowsableState.Never)>]
     member _.Invoke (arg: 'Arg) =
         mailbox.PostAndAsyncReply(fun reply -> RunFunction(arg, reply))

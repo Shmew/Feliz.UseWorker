@@ -1,6 +1,6 @@
 {
   "name": "feliz.-use-worker",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Fable bindings written in the Feliz-style for UseWorker.js",
   "homepage": "https://github.com/Shmew/Feliz.UseWorker",
   "bugs": {
