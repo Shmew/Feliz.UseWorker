@@ -1,6 +1,8 @@
 # Feliz.UseWorker [![Nuget](https://img.shields.io/nuget/v/Feliz.UseWorker.svg?maxAge=0&colorB=brightgreen)](https://www.nuget.org/packages/Feliz.UseWorker)
 
-Web workers in Fable made easy, exposed as React hooks and Elmish commands.
+Web workers in Fable made easy, exposed as React hooks and Elmish commands all within a single project.
+
+Includes features such as sync-fallback, message timeouts, automatic non-primitive serialization, and reactive status updates.
 
 A worker file:
 
@@ -29,6 +31,10 @@ type State =
     { Count: int 
       Worker: Worker<unit,int> option
       WorkerState: WorkerStatus }
+
+    interface System.IDisposable with
+        member this.Dispose () =
+            this.Worker |> Option.iter (fun w -> w.Dispose())
 
 type Msg =
     | ChangeWorkerState of WorkerStatus
