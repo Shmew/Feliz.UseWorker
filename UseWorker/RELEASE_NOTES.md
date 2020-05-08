@@ -1,3 +1,6 @@
+### 0.4.1 - Saturday, April 12th, 2020
+* Update dependencies
+
 ### 0.4.0 - Saturday, April 12th, 2020
 * Add api for properly disposing of elmish generated workers.
 
