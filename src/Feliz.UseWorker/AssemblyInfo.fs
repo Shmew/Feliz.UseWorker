@@ -6,8 +6,8 @@ open System.Runtime.CompilerServices
 [<assembly: AssemblyTitleAttribute("Feliz.UseWorker")>]
 [<assembly: AssemblyProductAttribute("Feliz.UseWorker")>]
 [<assembly: AssemblyDescriptionAttribute("Fable bindings written in the Feliz-style for UseWorker.js")>]
-[<assembly: AssemblyVersionAttribute("0.4.0")>]
-[<assembly: AssemblyFileVersionAttribute("0.4.0")>]
+[<assembly: AssemblyVersionAttribute("0.4.1")>]
+[<assembly: AssemblyFileVersionAttribute("0.4.1")>]
 [<assembly: AssemblyConfigurationAttribute("Release")>]
 [<assembly: InternalsVisibleToAttribute("Feliz.UseWorker.Tests")>]
 do ()
@@ -16,7 +16,7 @@ module internal AssemblyVersionInformation =
     let [<Literal>] AssemblyTitle = "Feliz.UseWorker"
     let [<Literal>] AssemblyProduct = "Feliz.UseWorker"
     let [<Literal>] AssemblyDescription = "Fable bindings written in the Feliz-style for UseWorker.js"
-    let [<Literal>] AssemblyVersion = "0.4.0"
-    let [<Literal>] AssemblyFileVersion = "0.4.0"
+    let [<Literal>] AssemblyVersion = "0.4.1"
+    let [<Literal>] AssemblyFileVersion = "0.4.1"
     let [<Literal>] AssemblyConfiguration = "Release"
     let [<Literal>] InternalsVisibleTo = "Feliz.UseWorker.Tests"

@@ -1,6 +1,6 @@
 {
   "name": "feliz.-use-worker",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Fable bindings written in the Feliz-style for UseWorker.js",
   "homepage": "https://github.com/Shmew/Feliz.UseWorker",
   "bugs": {
@@ -20,31 +20,31 @@
     "start": "webpack-dev-server"
   },
   "dependencies": {
-    "react": "^16.10",
-    "react-dom": "^16.10",
-    "react-highlight": "^0.12",
-    "react-markdown": "^4.2",
-    "source-map-support": "^0.5"
+    "react": "^16",
+    "react-dom": "^16",
+    "react-highlight": "^0",
+    "react-markdown": "^4",
+    "source-map-support": "^0"
   },
   "devDependencies": {
-    "@babel/core": "^7.6",
-    "@babel/preset-env": "^7.6",
-    "babel-loader": "^8.0",
-    "core-js": "^3.2",
-    "fable-compiler": "^2.4",
-    "fable-loader": "^2.1",
-    "fable-splitter": "^2.1",
-    "fast-glob": "^3.2",
-    "file-loader": "^4.2",
-    "gh-pages": "^2.1",
-    "html-webpack-plugin": "^3.2",
-    "remotedev": "^0.2",
-    "resolve-url-loader": "^3.1",
-    "rollup": "^2.3",
-    "rollup-plugin-cleanup": "^3.1",
-    "webpack": "^4.41",
-    "webpack-cli": "^3.3",
-    "webpack-dev-server": "^3.8"
+    "@babel/core": "^7",
+    "@babel/preset-env": "^7",
+    "babel-loader": "^8",
+    "core-js": "^3",
+    "fable-compiler": "^2",
+    "fable-loader": "^2",
+    "fable-splitter": "^2",
+    "fast-glob": "^3",
+    "file-loader": "^4",
+    "gh-pages": "^2",
+    "html-webpack-plugin": "^3",
+    "remotedev": "^0",
+    "resolve-url-loader": "^3",
+    "rollup": "^2",
+    "rollup-plugin-cleanup": "^3",
+    "webpack": "^4",
+    "webpack-cli": "^3",
+    "webpack-dev-server": "^3"
   },
   "private": true
 }
