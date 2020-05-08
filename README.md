@@ -93,3 +93,5 @@ let render = React.functionComponent(fun () ->
         ]
     ])
 ```
+
+See the full documentation with live examples [here](https://shmew.github.io/Feliz.UseWorker/).
