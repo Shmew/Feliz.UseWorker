@@ -1,3 +1,6 @@
+### 0.4.2 - Wednesday, May 20th, 2020
+* Update for stable Feliz release
+
 ### 0.4.1 - Saturday, April 12th, 2020
 * Update dependencies
 
