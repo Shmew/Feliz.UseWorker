@@ -321,7 +321,7 @@ let sidebar = React.functionComponent(fun (input: {| state: State; dispatch: Msg
             style.width (length.perc 100)
         ]
         prop.children [ 
-            menuLabel "Feliz.Plotly"
+            menuLabel "Feliz.UseWorker"
             allItems {| state = input.state; dispatch = dispatch |} 
         ]
     ])
