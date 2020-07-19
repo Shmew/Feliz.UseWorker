@@ -1,3 +1,6 @@
+### 0.5.0 - Sunday, July 19th, 2020
+* Add CancellationToken option for better control over cleanup
+
 ### 0.4.2 - Wednesday, May 20th, 2020
 * Update for stable Feliz release
 
@@ -5,7 +8,7 @@
 * Update dependencies
 
 ### 0.4.0 - Saturday, April 12th, 2020
-* Add api for properly disposing of elmish generated workers.
+* Add api for properly disposing of elmish generated workers
 
 ### 0.3.0 - Thursday, April 9th, 2020
 * Re-implement public API for more customization and type safety
