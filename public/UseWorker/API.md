@@ -119,6 +119,13 @@ type WorkerOptions =
       /// `/Workers` is then appended to the result.
       BasePath: string
 
+      /// Cancellation token to abort in-progress operations and status
+      /// updates.
+      ///
+      /// Default: Created and tied to component state when used
+      /// as a React hook, no token used when via Elmish.
+      CancellationToken: System.Threading.CancellationToken option
+
       /// A list of external dependencies such as an unpkg script.
       /// 
       /// This shouldn't be necessary, simply open the namespace/modules

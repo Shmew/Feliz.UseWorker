@@ -1,5 +1,4 @@
 ﻿type project
-licenseExpression https://github.com/Shmew/Feliz.UseWorker/blob/master/LICENSE
 authors Cody Johnson
 description
     Web workers in Fable made easy, exposed as React hooks and Elmish commands.

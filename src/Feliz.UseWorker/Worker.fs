@@ -34,6 +34,13 @@ type WorkerOptions =
       /// `/Workers` is then appended to the result.
       BasePath: string
 
+      /// Cancellation token to abort in-progress operations and status
+      /// updates.
+      ///
+      /// Default: Created and tied to component state when used
+      /// as a React hook, no token used when via Elmish.
+      CancellationToken: System.Threading.CancellationToken option
+
       /// A list of external dependencies such as an unpkg script.
       /// 
       /// This shouldn't be necessary, simply open the namespace/modules
@@ -62,7 +69,8 @@ type WorkerOptions =
             workerPath::this.Dependencies
             |> Array.ofList
 
-    static member internal Defaults =
+    [<EditorBrowsable(EditorBrowsableState.Never)>]
+    static member Defaults =
         { BasePath = 
             document.location.href.Split('#') 
             |> Array.tryHead
@@ -70,6 +78,7 @@ type WorkerOptions =
             | Some url -> url.Remove(url.Length-1)
             | None -> document.location.origin
             |> sprintf "%s/Workers"
+          CancellationToken = None
           Fallback = true
           Dependencies = []
           Timeout = Some 5000 }
@@ -399,9 +408,9 @@ type Worker<'Arg,'Result> private (workerFun: WorkerFunc<'Arg,'Result>, subscrib
     interface System.IDisposable with
         member _.Dispose () = 
             mailbox.Post Kill
+            subscriber.Kill()
             token.Cancel()
             token.Dispose()
-            subscriber.Kill()
 
     /// Disposes the worker and all resources related to it.
     member this.Dispose() = (this :> System.IDisposable).Dispose()
@@ -413,6 +422,9 @@ type Worker<'Arg,'Result> private (workerFun: WorkerFunc<'Arg,'Result>, subscrib
     [<EditorBrowsable(EditorBrowsableState.Never)>]
     member _.Kill () =
         mailbox.Post Kill
+    
+    /// Current worker configuration.
+    member _.Options = options
 
     [<EditorBrowsable(EditorBrowsableState.Never)>]
     member _.Restart () =
@@ -423,16 +435,14 @@ type Worker<'Arg,'Result> private (workerFun: WorkerFunc<'Arg,'Result>, subscrib
 
     /// Creates the mailbox processer with subscriber for elmish usage.
     [<EditorBrowsable(EditorBrowsableState.Never)>]
-    static member CreateElmish (workerFun: WorkerFunc<'Arg,'Result>, dispatch: WorkerStatus -> unit, ?options: WorkerOptions -> WorkerOptions) =
+    static member CreateElmish (workerFun: WorkerFunc<'Arg,'Result>, dispatch: WorkerStatus -> unit, options: WorkerOptions) =
         let workerSub = WorkerSubscriber.Elmish(new WorkerSubscriberMailbox(dispatch))
-        let options = WorkerOptions.Defaults |> Option.defaultValue id options
 
         new Worker<'Arg,'Result>(workerFun, workerSub, options)
 
     /// Creates the mailbox processer and subscriber (callback) for the react hook.
     [<EditorBrowsable(EditorBrowsableState.Never)>]
-    static member CreateHook (workerFun: WorkerFunc<'Arg,'Result>, dispatch: WorkerStatus -> unit, ?options: WorkerOptions -> WorkerOptions) =
+    static member CreateHook (workerFun: WorkerFunc<'Arg,'Result>, dispatch: WorkerStatus -> unit, options: WorkerOptions) =
         let workerSub = WorkerSubscriber.Hook(dispatch)
-        let options = WorkerOptions.Defaults |> Option.defaultValue id options
 
         new Worker<'Arg,'Result>(workerFun, workerSub, options)
