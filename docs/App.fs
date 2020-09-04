@@ -387,9 +387,9 @@ let render' = React.functionComponent(fun (input: {| state: State; dispatch: Msg
             prop.children [ main {| state = input.state; dispatch = dispatch |} ]
         ]
 
-    Router.router [
-        Router.onUrlChanged (UrlChanged >> dispatch)
-        Router.application application
+    React.router [
+        router.onUrlChanged (UrlChanged >> dispatch)
+        router.children application
     ])
 
 let render (state: State) dispatch = render' {| state = state; dispatch = dispatch |}

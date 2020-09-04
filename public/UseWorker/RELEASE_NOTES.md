@@ -1,3 +1,6 @@
+### 0.5.1 - Thursday, September 2nd, 2020
+* Update dependencies
+
 ### 0.5.0 - Sunday, July 19th, 2020
 * Add CancellationToken option for better control over cleanup
 
