@@ -106,6 +106,19 @@ module Internals =
     [<Emit("importScripts($0)")>]
     let importScripts s = jsNative
 
+    // fsharplint:disable TypeNaming
+    [<Global>]
+    type URL =
+        /// Creates a string containing a URL representing the object given in the parameter.
+        ///
+        /// The URL lifetime is tied to the document in the window on which it was created.
+        ///
+        /// Each time you call createObjectURL, a new object URL is created, even if you've
+        /// already created one for the same object. Each of these must be released by
+        /// calling URL.revokeObjectURL when you no longer need them.
+        static member createObjectURL (blob : Browser.Types.Blob) : string = jsNative
+    // fsharplint:enable
+
     /// Creates the worker blob url via stringifying the parameters.
     let inline createWorkerBlobUrl umdPath name depArr jobRunner =
         let onMessage = 
@@ -117,11 +130,14 @@ module Internals =
             jsOptions<BlobPropertyBag>(fun o ->
                 o.``type`` <- "text/javascript")
 
-        match depsParser depArr with
-        | Some deps ->
-            Blob.Create([| deps :> obj; onMessage :> obj |], blobOptions)
-        | None -> Blob.Create([| onMessage :> obj |], blobOptions)
-        |> URL?createObjectURL
+        let blob : Browser.Types.Blob =
+            match depsParser depArr with
+            | Some deps ->
+                Browser.Blob.Blob.Create([| deps :> obj; onMessage :> obj |], blobOptions)
+            | None ->
+                Browser.Blob.Blob.Create([| onMessage :> obj |], blobOptions)
+
+        URL.createObjectURL blob
 
     [<Emit("new Worker($0)")>]
     let newWorker blobUrl : Worker = jsNative
